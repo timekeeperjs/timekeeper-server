@@ -6,7 +6,20 @@ interface IVersionTable {
   remotes: RemoteResponse[];
 }
 
+const parseVersionToDate = (version: string): Date => {
+  const [datePart, timePart] = version.split("__");
+  const [year, month, day] = datePart.split("_").map(Number);
+  const [hours, minutes] = timePart.split("_").map(Number);
+  return new Date(year, month - 1, day, hours, minutes);
+};
+
 const VersionTable: React.FC<IVersionTable> = ({ remotes }) => {
+  const sortedRemotes = [...remotes].sort((a, b) => {
+    const dateA = parseVersionToDate(a.version);
+    const dateB = parseVersionToDate(b.version);
+    return dateB.getTime() - dateA.getTime(); // Descending order
+  });
+
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md">
       <table className="min-w-full divide-y divide-gray-200">
@@ -39,7 +52,7 @@ const VersionTable: React.FC<IVersionTable> = ({ remotes }) => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {remotes.length === 0 ? (
+          {sortedRemotes.length === 0 ? (
             <tr>
               <td
                 colSpan={4}
@@ -48,13 +61,13 @@ const VersionTable: React.FC<IVersionTable> = ({ remotes }) => {
                 <div className="flex flex-col items-center justify-center">
                   <FaTimeline className="text-blue-500 text-6xl mb-4" />
                   <p className="text-lg font-medium text-gray-900">
-                    Select a property by searching for a hotel name or ID.
+                    Select your remote name to show all available versions
                   </p>
                 </div>
               </td>
             </tr>
           ) : (
-            remotes.map((remote, index) => (
+            sortedRemotes.map((remote, index) => (
               <tr key={index}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {remote.remoteName}
