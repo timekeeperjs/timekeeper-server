@@ -1,5 +1,5 @@
-import React from "react";
-import { FaTimeline } from "react-icons/fa6";
+import React, { useState } from "react";
+import { FaTimeline, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { RemoteResponse } from "../api";
 
 interface IVersionTable {
@@ -14,11 +14,29 @@ const parseVersionToDate = (version: string): Date => {
 };
 
 const VersionTable: React.FC<IVersionTable> = ({ remotes }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
+
   const sortedRemotes = [...remotes].sort((a, b) => {
     const dateA = parseVersionToDate(a.version);
     const dateB = parseVersionToDate(b.version);
     return dateB.getTime() - dateA.getTime(); // Descending order
   });
+
+  const totalPages = Math.ceil(sortedRemotes.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = sortedRemotes.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
 
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md">
@@ -52,7 +70,7 @@ const VersionTable: React.FC<IVersionTable> = ({ remotes }) => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {sortedRemotes.length === 0 ? (
+          {currentItems.length === 0 ? (
             <tr>
               <td
                 colSpan={4}
@@ -67,7 +85,7 @@ const VersionTable: React.FC<IVersionTable> = ({ remotes }) => {
               </td>
             </tr>
           ) : (
-            sortedRemotes.map((remote, index) => (
+            currentItems.map((remote, index) => (
               <tr key={index}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {remote.remoteName}
@@ -87,6 +105,28 @@ const VersionTable: React.FC<IVersionTable> = ({ remotes }) => {
           )}
         </tbody>
       </table>
+
+      {sortedRemotes.length > 0 && (
+        <div className="flex justify-center items-center mt-4 space-x-4 py-2">
+          <button
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50 flex items-center"
+          >
+            <FaChevronLeft />
+          </button>
+          <span className="text-sm text-gray-700">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50 flex items-center"
+          >
+            <FaChevronRight />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
