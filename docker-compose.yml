@@ -11,3 +11,12 @@ services:
       - ENV_VAR_NAME=value
     volumes:
       - ./src/timekeeper-backend:/app
+
+  timekeeper-frontend:
+    build:
+      context: ./src/timekeeper-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./src/timekeeper-frontend:/app
