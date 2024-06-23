@@ -68,3 +68,35 @@ func PushRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 		c.JSON(http.StatusOK, remote)
 	}
 }
+
+// DashboardHandler godoc
+// @Summary Get all remotes or remotes by name
+// @Description Get all remotes or remotes by name
+// @Tags remote
+// @Accept  json
+// @Produce  json
+// @Param remoteName query string false "Remote Name"
+// @Success 200 {array} models.RemoteResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /dashboard [get]
+func DashboardHandler(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		remoteName := c.Query("remoteName")
+
+		var remotes []models.Remote
+		var err error
+
+		if remoteName != "" {
+			err = db.Where("remote_name = ?", remoteName).Find(&remotes).Error
+		} else {
+			err = db.Find(&remotes).Error
+		}
+
+		if err != nil && !gorm.IsRecordNotFoundError(err) {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve remotes"})
+			return
+		}
+
+		c.JSON(http.StatusOK, remotes)
+	}
+}

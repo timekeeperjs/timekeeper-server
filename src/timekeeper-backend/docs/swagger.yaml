@@ -1,13 +1,22 @@
 basePath: /
 definitions:
-  health.SuccessResponse:
-    properties:
-      status:
-        type: string
-    type: object
-  remote.ErrorResponse:
+  models.ErrorResponse:
     properties:
       error:
+        type: string
+    type: object
+  models.RemoteResponse:
+    properties:
+      remoteName:
+        type: string
+      remoteURL:
+        type: string
+      version:
+        type: string
+    type: object
+  models.SuccessResponse:
+    properties:
+      status:
         type: string
     type: object
   remote.PushRemoteRequest:
@@ -19,15 +28,6 @@ definitions:
       version:
         type: string
     type: object
-  remote.RemoteResponse:
-    properties:
-      remoteName:
-        type: string
-      remoteURL:
-        type: string
-      version:
-        type: string
-    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -35,6 +35,32 @@ info:
   title: Timekeeper Backend API
   version: "1.0"
 paths:
+  /dashboard:
+    get:
+      consumes:
+      - application/json
+      description: Get all remotes or remotes by name
+      parameters:
+      - description: Remote Name
+        in: query
+        name: remoteName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.RemoteResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all remotes or remotes by name
+      tags:
+      - remote
   /get-remote:
     get:
       consumes:
@@ -57,11 +83,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/remote.RemoteResponse'
+            $ref: '#/definitions/models.RemoteResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/remote.ErrorResponse'
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Get a remote by name and version
       tags:
       - remote
@@ -74,7 +100,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health.SuccessResponse'
+            $ref: '#/definitions/models.SuccessResponse'
       summary: Health check endpoint
       tags:
       - health
@@ -96,11 +122,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/remote.RemoteResponse'
+            $ref: '#/definitions/models.RemoteResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/remote.ErrorResponse'
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Push a new remote
       tags:
       - remote

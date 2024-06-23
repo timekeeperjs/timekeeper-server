@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
-	_ "timekeeper-backend/docs"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
+	_ "timekeeper-backend/docs"
 	"timekeeper-backend/internal/db"
 	"timekeeper-backend/internal/health"
 	"timekeeper-backend/internal/remote"
@@ -30,6 +30,7 @@ func main() {
 	// Set up routes
 	r.GET("/get-remote", remote.GetRemoteHandler(database))
 	r.POST("/push-remote", remote.PushRemoteHandler(database))
+	r.GET("/dashboard", remote.DashboardHandler(database))
 
 	// Swagger endpoint
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

@@ -15,6 +15,46 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/dashboard": {
+            "get": {
+                "description": "Get all remotes or remotes by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "remote"
+                ],
+                "summary": "Get all remotes or remotes by name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Remote Name",
+                        "name": "remoteName",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.RemoteResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/get-remote": {
             "get": {
                 "description": "Get a remote by name and version",
@@ -48,13 +88,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/remote.RemoteResponse"
+                            "$ref": "#/definitions/models.RemoteResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/remote.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -74,7 +114,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/health.SuccessResponse"
+                            "$ref": "#/definitions/models.SuccessResponse"
                         }
                     }
                 }
@@ -108,13 +148,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/remote.RemoteResponse"
+                            "$ref": "#/definitions/models.RemoteResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/remote.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -122,18 +162,32 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "health.SuccessResponse": {
+        "models.ErrorResponse": {
             "type": "object",
             "properties": {
-                "status": {
+                "error": {
                     "type": "string"
                 }
             }
         },
-        "remote.ErrorResponse": {
+        "models.RemoteResponse": {
             "type": "object",
             "properties": {
-                "error": {
+                "remoteName": {
+                    "type": "string"
+                },
+                "remoteURL": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
                     "type": "string"
                 }
             }
@@ -145,20 +199,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "remoteName": {
-                    "type": "string"
-                },
-                "version": {
-                    "type": "string"
-                }
-            }
-        },
-        "remote.RemoteResponse": {
-            "type": "object",
-            "properties": {
-                "remoteName": {
-                    "type": "string"
-                },
-                "remoteURL": {
                     "type": "string"
                 },
                 "version": {

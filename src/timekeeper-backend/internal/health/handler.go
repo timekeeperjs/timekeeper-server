@@ -12,7 +12,7 @@ import (
 // @Description Returns the status of the server
 // @Tags health
 // @Produce  json
-// @Success 200 {object} SuccessResponse
+// @Success 200 {object} models.SuccessResponse
 // @Router /health-check [get]
 func HealthCheck(c *gin.Context) {
 	response := models.SuccessResponse{
