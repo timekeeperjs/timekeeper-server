@@ -88,6 +88,10 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Get a remote by name and version
       tags:
       - remote
@@ -125,6 +129,10 @@ paths:
             $ref: '#/definitions/models.RemoteResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Push a new remote

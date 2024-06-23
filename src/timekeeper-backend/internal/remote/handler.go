@@ -77,6 +77,7 @@ func DashboardHandler(db *gorm.DB) gin.HandlerFunc {
 // @Param version query string true "Version"
 // @Success 200 {object} models.RemoteResponse
 // @Failure 404 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
 // @Router /get-remote [get]
 func GetRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -85,7 +86,11 @@ func GetRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 
 		var remote models.Remote
 		if err := db.Where("remote_name = ? AND version = ?", remoteName, version).First(&remote).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Remote not found"})
+			if err == gorm.ErrRecordNotFound {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Remote not found"})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			}
 			return
 		}
 
@@ -102,7 +107,7 @@ func GetRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 // @Param remote body PushRemoteRequest true "Remote"
 // @Success 200 {object} models.RemoteResponse
 // @Failure 400 {object} models.ErrorResponse
-// @Error 500 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
 // @Router /push-remote [post]
 func PushRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
