@@ -28,9 +28,10 @@ func main() {
 	r.GET("/health-check", health.HealthCheck)
 
 	// Set up routes
+	r.GET("/remote-names", remote.GetRemoteNamesHandler(database))
+	r.GET("/dashboard", remote.DashboardHandler(database))
 	r.GET("/get-remote", remote.GetRemoteHandler(database))
 	r.POST("/push-remote", remote.PushRemoteHandler(database))
-	r.GET("/dashboard", remote.DashboardHandler(database))
 
 	// Swagger endpoint
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

@@ -130,4 +130,25 @@ paths:
       summary: Push a new remote
       tags:
       - remote
+  /remote-names:
+    get:
+      consumes:
+      - application/json
+      description: Get all unique remote names
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all unique remote names
+      tags:
+      - remote
 swagger: "2.0"
