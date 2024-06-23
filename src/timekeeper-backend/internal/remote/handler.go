@@ -1,9 +1,11 @@
 package remote
 
 import (
+	"net/http"
+	"timekeeper-backend/internal/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"net/http"
 )
 
 type PushRemoteRequest struct {
@@ -20,15 +22,15 @@ type PushRemoteRequest struct {
 // @Produce  json
 // @Param remoteName query string true "Remote Name"
 // @Param version query string true "Version"
-// @Success 200 {object} RemoteResponse
-// @Failure 404 {object} ErrorResponse
+// @Success 200 {object} models.RemoteResponse
+// @Failure 404 {object} models.ErrorResponse
 // @Router /get-remote [get]
 func GetRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		remoteName := c.Query("remoteName")
 		version := c.Query("version")
 
-		var remote Remote
+		var remote models.Remote
 		if err := db.Where("remote_name = ? AND version = ?", remoteName, version).First(&remote).Error; err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Remote not found"})
 			return
@@ -45,8 +47,8 @@ func GetRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 // @Accept  json
 // @Produce  json
 // @Param remote body PushRemoteRequest true "Remote"
-// @Success 200 {object} RemoteResponse
-// @Failure 400 {object} ErrorResponse
+// @Success 200 {object} models.RemoteResponse
+// @Failure 400 {object} models.ErrorResponse
 // @Router /push-remote [post]
 func PushRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -56,7 +58,7 @@ func PushRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
-		remote := Remote{
+		remote := models.Remote{
 			RemoteName: req.RemoteName,
 			Version:    req.Version,
 			RemoteURL:  req.BaseURL,

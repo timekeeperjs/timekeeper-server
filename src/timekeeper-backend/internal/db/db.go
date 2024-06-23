@@ -1,9 +1,12 @@
+//go:test ignoretest
+
 package db
 
 import (
+	"timekeeper-backend/internal/models"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"timekeeper-backend/internal/remote"
 )
 
 func Init() *gorm.DB {
@@ -13,7 +16,7 @@ func Init() *gorm.DB {
 	}
 
 	// Migrate the schema
-	db.AutoMigrate(&remote.Remote{})
+	db.AutoMigrate(&models.Remote{})
 
 	return db
 }

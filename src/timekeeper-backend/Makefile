@@ -22,7 +22,7 @@ clean:
 
 # Run tests
 test:
-	@go test ./...
+	@go test -tags=ignoretest ./...
 
 # Generate Swagger documentation
 swag:

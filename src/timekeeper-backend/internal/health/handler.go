@@ -1,13 +1,11 @@
 package health
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
-)
+	"timekeeper-backend/internal/models"
 
-type SuccessResponse struct {
-	Status string `json:"status"`
-}
+	"github.com/gin-gonic/gin"
+)
 
 // HealthCheck godoc
 // @Summary Health check endpoint
@@ -17,7 +15,7 @@ type SuccessResponse struct {
 // @Success 200 {object} SuccessResponse
 // @Router /health-check [get]
 func HealthCheck(c *gin.Context) {
-	response := SuccessResponse{
+	response := models.SuccessResponse{
 		Status: "OK",
 	}
 	c.JSON(http.StatusOK, response)
