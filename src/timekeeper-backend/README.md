@@ -10,7 +10,7 @@ Timekeeper Backend is a simple API built with Go, using the Gin framework and GO
 
 ## Project Structure
 
-```
+```md
 timekeeper-backend/
  ├── cmd/ 
  │ └── app/ 
@@ -23,11 +23,13 @@ timekeeper-backend/
  │ ├── db/ 
  │ │ └── db.go 
  │ ├── health/ 
+ │ │ ├── handler_test.go 
  │ │ └── handler.go 
+ │ ├── models/ 
+ │ │ └── model.go 
  │ └── remote/ 
- │   ├── handler.go 
- │   ├── model.go 
- │   └── response.go 
+ │   ├── handler_test.go 
+ │   └── handler.go 
  ├── .gitignore 
  ├── go.mod 
  ├── go.sum 
