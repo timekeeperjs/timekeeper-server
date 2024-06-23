@@ -81,6 +81,35 @@ func TestGetRemoteHandler_NotFound(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestGetRemoteHandler_LatestVersion(t *testing.T) {
+	// Initialize the database
+	database := db.Init(testDBFilePath)
+	defer database.Close()
+
+	// Seed the database with multiple versions
+	database.Create(&models.Remote{RemoteName: "testRemote", Version: "1.0", RemoteURL: "http://example.com/1.0"})
+	database.Create(&models.Remote{RemoteName: "testRemote", Version: "2.0", RemoteURL: "http://example.com/2.0"})
+	database.Create(&models.Remote{RemoteName: "testRemote", Version: "3.0", RemoteURL: "http://example.com/3.0"})
+
+	router := setupRouter(database)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/get-remote?remoteName=testRemote&version=latest", nil)
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	var response models.RemoteResponse
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, "testRemote", response.RemoteName)
+	assert.Equal(t, "3.0", response.Version)
+	assert.Equal(t, "http://example.com/3.0", response.RemoteURL)
+
+	// Clear the database
+	err = db.ClearDatabase(testDBFilePath)
+	assert.NoError(t, err)
+}
+
 func TestPushRemoteHandler(t *testing.T) {
 	// Initialize the database
 	database := db.Init(testDBFilePath)

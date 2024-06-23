@@ -85,7 +85,15 @@ func GetRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 		version := c.Query("version")
 
 		var remote models.Remote
-		if err := db.Where("remote_name = ? AND version = ?", remoteName, version).First(&remote).Error; err != nil {
+		var err error
+
+		if version == "latest" {
+			err = db.Where("remote_name = ?", remoteName).Order("version DESC").First(&remote).Error
+		} else {
+			err = db.Where("remote_name = ? AND version = ?", remoteName, version).First(&remote).Error
+		}
+
+		if err != nil {
 			if err == gorm.ErrRecordNotFound {
 				c.JSON(http.StatusNotFound, gin.H{"error": "Remote not found"})
 			} else {
