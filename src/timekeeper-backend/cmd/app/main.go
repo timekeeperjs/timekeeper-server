@@ -19,7 +19,7 @@ import (
 // @BasePath /
 func main() {
 	// Initialize the database
-	database := db.Init()
+	database := db.Init("timekeeper.db")
 	defer database.Close()
 
 	// Set up the Gin router

@@ -58,7 +58,7 @@ func DashboardHandler(db *gorm.DB) gin.HandlerFunc {
 			err = db.Find(&remotes).Error
 		}
 
-		if err != nil && !gorm.IsRecordNotFoundError(err) {
+		if err != nil && err != gorm.ErrRecordNotFound {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve remotes"})
 			return
 		}
@@ -102,6 +102,7 @@ func GetRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 // @Param remote body PushRemoteRequest true "Remote"
 // @Success 200 {object} models.RemoteResponse
 // @Failure 400 {object} models.ErrorResponse
+// @Error 500 {object} models.ErrorResponse
 // @Router /push-remote [post]
 func PushRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -111,13 +112,23 @@ func PushRemoteHandler(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
+		// Additional validation checks
+		if req.RemoteName == "" || req.Version == "" || req.BaseURL == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
+			return
+		}
+
 		remote := models.Remote{
 			RemoteName: req.RemoteName,
 			Version:    req.Version,
 			RemoteURL:  req.BaseURL,
 		}
 
-		db.Create(&remote)
+		if err := db.Create(&remote).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create remote"})
+			return
+		}
+
 		c.JSON(http.StatusOK, remote)
 	}
 }
